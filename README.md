@@ -3,7 +3,9 @@ jq.Schedule.Plus
 
 ![](https://raw.githubusercontent.com/linmasahiro/jquery.schedule.plus/master/demo/images.png)
 
-jquery and html schedule calendar base on jq.Schedule
+jquery and html schedule calendar base on jq.Schedule!
+
+if you interested in it, you can reference orginal [jq.Schedule page](https://github.com/ateliee/jquery.schedule/)!
 
 javascript base time schedule plugin.
 
