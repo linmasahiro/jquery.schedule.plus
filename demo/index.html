@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>jq.Schedule Plus Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
+    </script>
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+
+    <script type="text/javascript" src="../js/jq.schedule.plus.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            padding-top: 60px;
+            /* 60px to make the container go all the way to the bottom of the topbar */
+        }
+    </style>
+</head>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var sampleRows = [{
+                title: 'Room１',
+                impossibleDate: [
+                    '2019/05/17'
+                ],
+                businessHours: [{
+                        dow: ['0'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['1'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['2'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['3'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['4'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['5'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['6'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                ],
+                schedule: [{
+                        text: 'Mr.A reserved',
+                        class: 'green',
+                        start: '2019/05/18 06:00',
+                        end: '2019/05/18 12:00',
+                        data: {
+                            something: 'something'
+                        }
+                    },
+                    {
+                        text: 'Mr.B reserved',
+                        class: '',
+                        start: '2019/05/19 06:00',
+                        end: '2019/05/19 12:00',
+                        data: {
+                            something: 'something'
+                        }
+                    }
+                ]
+            },
+            {
+                title: 'Room２',
+                impossibleDate: [],
+                businessHours: [{
+                        dow: ['0'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                    {
+                        dow: ['1'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                    {
+                        dow: ['2'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                    {
+                        dow: ['3'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                    {
+                        dow: ['4'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                    {
+                        dow: ['5'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                    {
+                        dow: ['6'],
+                        start: '10:00',
+                        end: '17:00'
+                    },
+                ],
+                schedule: [{
+                    text: 'Mr.C reserved',
+                    class: 'green',
+                    start: '2019/05/18 12:00',
+                    end: '2019/05/18 17:00',
+                    data: {
+                        something: 'something'
+                    }
+                }]
+            },
+            {
+                title: 'Room３',
+                impossibleDate: [],
+                businessHours: [{
+                        dow: ['0'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['1'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['2'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['3'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['4'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['5'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                    {
+                        dow: ['6'],
+                        start: '00:00',
+                        end: '24:00'
+                    },
+                ],
+                schedule: [{
+                    text: 'Mr.D reserved',
+                    class: 'green',
+                    start: '2019/05/17 12:00',
+                    end: '2019/05/17 18:00',
+                    data: {
+                        something: 'something'
+                    }
+                }]
+            }
+        ];
+
+        // 時間単位種別（6時間、1時間、１５分）
+        var widthTimeTypes = [360, 60, 15];
+        var selectedType = jQuery('input[name="timeType"]:checked').val();
+        jQuery('input[name="timeType"]').change(function () {
+            jQuery('#schedule').empty();
+            scheduleInit(widthTimeTypes[jQuery(this).val()]);
+        });
+
+        jQuery('input[name="mutiple"]').change(function () {
+            jQuery('#schedule').empty();
+            selectedType = jQuery('input[name="timeType"]:checked').val();
+            if (jQuery(this).val() == '0') {
+                scheduleInit(widthTimeTypes[selectedType], false);
+            } else {
+                scheduleInit(widthTimeTypes[selectedType], true);
+            }
+
+        });
+
+        scheduleInit(widthTimeTypes[selectedType], false);
+
+        function scheduleInit(timeType, multiple) {
+            jQuery("#schedule").timeSchedule({
+                today: '2019/05/16', // LIN 追加機能 - 本日
+                nowTime: '15:01', // LIN 追加機能 - 現在時刻
+                startDate: '2019/05/16', // LIN 追加機能 - 開始日
+                endDate: '2019/05/22', // LIN 追加機能 - 終了日
+                weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+                startTime: "00:00",
+                endTime: "24:00",
+                widthTimeX: 45,
+                widthTime: 60 * timeType,
+                timeLineY: 132,
+                verticalScrollbar: 10,
+                timeLineBorder: 1,
+                dataWidth: 200,
+                nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+                debug: "",
+                multiple: multiple, // LIN 追加機能-複数選択機能有無
+                rows: sampleRows,
+                init_data: function (node, data) {
+                    $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+                },
+                click: function (node, data) {
+                    $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+                },
+                append: function (node, data) {
+                    $("#logs").append($("<div>").text("append event:" + JSON.stringify(data)));
+                },
+                timeClick: function (element, data) {
+                    // LIN 追加機能-シングルクリックイベント
+                    $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(data)));
+                },
+                dateClick: function (date) {
+                    // LIN 追加機能-日付クリックイベント
+                    $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(date)));
+                },
+                timeDrag: function (data) {
+                    // LIN 追加機能-ドラッグイベント
+                    $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+                },
+                titleClick: function (data) {
+                    // LIN 追加機能-行タイトルクリックイベント
+                    $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(data)));
+                },
+                change: function (node, data) {
+                    $("#logs").append($("<div>").text("Change event:" + JSON.stringify(data)));
+                },
+                delete: function (data) {
+                    // LIN 追加機能-削除イベント
+                    $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(data)));
+                }
+            });
+        }
+    })
+</script>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="brand" href="#">jQ.Scuedule.plus.js</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li class="active"><a href="#home">Home</a></li>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="#info">Get Start</a></li>
+                        <li><a href="#option">Option</a></li>
+                        <li><a href="https://github.com/ateliee/jquery.schedule/" target="_blank">Orignal
+                                jq.Schedule</a></li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="hero-unit">
+            <h1 id="home">jq.Schedule Plus</h1>
+            <p>this is base on jq.Schedule! if you interested in it, you can reference orginal jq.Schedule!</p>
+            <hr />
+            <h3>Orginal Support</h3>
+            <p>Drag and Drop Support</p>
+            <p>Resize Schedule Support</p>
+            <p>Ajax Support(Callback Event Option)</p>
+            <p><button onclick="javascript:location.href='https://github.com/ateliee/jquery.schedule';"
+                    class="btn btn-large btn-primary" type="button">Download jq.Schedule</button></p>
+            <p>
+                <iframe src="http://ghbtns.com/github-btn.html?user=ateliee&repo=jquery.schedule&type=watch&count=true"
+                    allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+            </p>
+            <hr />
+            <h3>Extention Support</h3>
+            <p>Add schedule Support</p>
+            <p>Add multiple Support</p>
+            <p>Time width adjust Schedule Support</p>
+            <p>Weekday schedule Support</p>
+            <p>Business hours Support</p>
+            <p>Delete schedule Support</p>
+            <p><button onclick="javascript:location.href='https://github.com/linmasahiro/jq.Schedule.Plus';"
+                    class="btn btn-large btn-primary" type="button">Download jq.Schedule.Plus</button></p>
+            <p>
+                <iframe src="http://ghbtns.com/github-btn.html?user=linmasahiro&repo=jquery.schedule.plus&type=watch&count=true"
+                    allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+            </p>
+        </div>
+        <h2 id="demo">Demo</h2>
+        <p>
+            Example Sample Demo
+        </p>
+        <div style="display: flex;">
+            <span>Time width adjust：</span>
+            <input id="timeType360" name="timeType" type="radio" value="0" />
+            <label for="timeType360">6 Hour</label>&nbsp;
+            <input id="timeType60" name="timeType" type="radio" value="1" checked="true" />
+            <label for="timeType60">1 Hour</label>&nbsp;
+            <input id="timeType15" name="timeType" type="radio" value="2" />
+            <label for="timeType15">15 Minute</label>
+        </div>
+        <div style="display: flex;">
+            <span>Add mutiple：</span>
+            <input id="mutipleY" name="mutiple" type="radio" value="1" />
+            <label for="mutipleY">Yes</label>&nbsp;
+            <input id="mutipleN" name="mutiple" type="radio" value="0" checked="true" />
+            <label for="mutipleN">No</label>&nbsp;
+        </div>
+        <div style="padding: 0 0 40px;">
+            <div id="scheduleContent">
+                <div id="schedule"></div>
+            </div>
+            <h3>Log</h3>
+            <div style="padding: 12px 0 0;">
+                <pre id="logs">
+                        </pre>
+            </div>
+        </div>
+        <h2 id="info">Get Start</h2>
+        <ol>
+            <li>
+                <p>Please Download <a
+                        href="https://github.com/ateliee/jquery.schedule/archive/master.zip">jQuery.Schedule</a></p>
+            </li>
+            <li>
+                <p>include <code>jquery.js</code>and<code>jquery.ui.js</code> after jq.schedule</p>
+                <pre><code>&lt;script src=&quot;jquery-1.10.2.js&quot; type=&quot;text/javascript&quot; language=&quot;javascript&quot;&gt;&lt;/script&gt;
+            &lt;script src=&quot;jquery-ui-1.10.4.js&quot; type=&quot;text/javascript&quot; language=&quot;javascript&quot;&gt;&lt;/script&gt;
+            &lt;script type=&quot;text/javascript&quot; src=&quot;../js/jq.schedule.js&quot;&gt;&lt;/script&gt;
+            &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;../css/style.css&quot; /&gt;</code></pre>
+            </li>
+            <li>
+                <p>init scripts</p>
+                <pre><code>&lt;script type=&quot;text/javascript&quot;&gt;
+            jQuery(document).ready(function(){
+                var $sc = jQuery(&quot;#schedule&quot;).timeSchedule($options);
+            });
+            &lt;/script&gt;</code></pre>
+            </li>
+        </ol>
+
+        <h2 id="option">Option</h2>
+        <p>
+            <table class="table table-striped">
+                <tr>
+                    <th colspan="2">name</th>
+                    <th width="80">Type</th>
+                    <th>description</th>
+                </tr>
+                <tr>
+                    <td colspan="2">nowTime</td>
+                    <td>String(HH:ii)</td>
+                    <td>schedule now time</td>
+                </tr>
+                <tr>
+                    <td colspan="2">startDate</td>
+                    <td>String(YYYY/MM/DD)</td>
+                    <td>schedule start date</td>
+                </tr>
+                <tr>
+                    <td colspan="2">endDate</td>
+                    <td>String(YYYY/MM/DD)</td>
+                    <td>schedule end date</td>
+                </tr>
+                <tr>
+                    <td colspan="2">weekday</td>
+                    <td>Array</td>
+                    <td>Date weekday</td>
+                </tr>
+                <tr>
+                    <td colspan="2">startTime</td>
+                    <td>String(HH:ii)</td>
+                    <td>schedule start time</td>
+                </tr>
+                <tr>
+                    <td colspan="2">endTime</td>
+                    <td>String(HH:ii)</td>
+                    <td>schedule end time</td>
+                </tr>
+                <tr>
+                    <td colspan="2">widthTime</td>
+                    <td>Integer</td>
+                    <td>minuite time line cell</td>
+                </tr>
+                <tr>
+                    <td colspan="2">timeLineY</td>
+                    <td>Integer</td>
+                    <td>cell height px</td>
+                </tr>
+                <tr>
+                    <td colspan="2">verticalScrollbar</td>
+                    <td>Integer</td>
+                    <td>scrollbar (px)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">timeLineBorder</td>
+                    <td>Integer</td>
+                    <td>border(top and bottom)</td>
+                </tr>
+                <tr>
+                    <td colspan="2">bundleMoveWidth</td>
+                    <td>Integer</td>
+                    <td>width to move all schedules to the right of the clicked time line cell.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">debug</td>
+                    <td>String,element</td>
+                    <td>debug string output elements</td>
+                </tr>
+                <tr>
+                    <td colspan="2">multiple</td>
+                    <td>Boolean</td>
+                    <td>can multiple add to schedule</td>
+                </tr>
+                <tr>
+                    <td rowspan="5">rows</td>
+                    <td></td>
+                    <td>Array</td>
+                    <td>Schedule Data</td>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>String</td>
+                    <td>Schedule Left Cell Text</td>
+                </tr>
+                <tr>
+                    <td>impossibleDate</td>
+                    <td>Array</td>
+                    <td>Can't reserve date</td>
+                </tr>
+                <tr>
+                    <td>businessHours</td>
+                    <td>Array</td>
+                    <td>Schedule businessHours</td>
+                </tr>
+                <tr>
+                    <td>schedule</td>
+                    <td>Array</td>
+                    <td>Schedule Cell Data</td>
+                </tr>
+                <tr>
+                    <td colspan="2">change</td>
+                    <td>function</td>
+                    <td>callback change time</td>
+                </tr>
+                <tr>
+                    <td colspan="2">click</td>
+                    <td>function</td>
+                    <td>callback click time</td>
+                </tr>
+                <tr>
+                    <td colspan="2">timeClick</td>
+                    <td>function</td>
+                    <td>callback timebar click</td>
+                </tr>
+                <tr>
+                    <td colspan="2">append</td>
+                    <td>function</td>
+                    <td>callback append time</td>
+                </tr>
+                <tr>
+                    <td colspan="2">dateClick</td>
+                    <td>function</td>
+                    <td>callback click date</td>
+                </tr>
+                <tr>
+                    <td colspan="2">timeDrag</td>
+                    <td>function</td>
+                    <td>callback drag time data</td>
+                </tr>
+                <tr>
+                    <td colspan="2">titleClick</td>
+                    <td>function</td>
+                    <td>callback click timebar line id</td>
+                </tr>
+                <tr>
+                    <td colspan="2">delete</td>
+                    <td>function</td>
+                    <td>callback delete data</td>
+                </tr>
+            </table>
+        </p>
+
+        <h2 id="option">Business Hours</h2>
+        <p>
+            <table class="table table-striped">
+                <tr>
+                    <th>name</th>
+                    <th width="80">Type</th>
+                    <th>description</th>
+                </tr>
+                <tr>
+                    <td>dow</td>
+                    <td>Array</td>
+                    <td>Day of week</td>
+                </tr>
+                <tr>
+                    <td>start</td>
+                    <td>String</td>
+                    <td>time String(HH:ii)</td>
+                </tr>
+                <tr>
+                    <td>end</td>
+                    <td>String</td>
+                    <td>time String(HH:ii)</td>
+                </tr>
+            </table>
+        </p>
+
+        <h2 id="option">Schedule Data</h2>
+        <p>
+            <table class="table table-striped">
+                <tr>
+                    <th colspan="2">name</th>
+                    <th width="80">Type</th>
+                    <th>description</th>
+                </tr>
+                <tr>
+                    <td colspan="2">title</td>
+                    <td>String</td>
+                    <td>Visible Text Schedule Bar</td>
+                </tr>
+                <tr>
+                    <td colspan="2">class</td>
+                    <td>String</td>
+                    <td>add class name</td>
+                </tr>
+                <tr>
+                    <td rowspan="5">schedule</td>
+                    <td colspan="2">array</td>
+                    <td>add schedule data</td>
+                </tr>
+                <tr>
+                    <td>start</td>
+                    <td>String</td>
+                    <td>time String(HH:ii)</td>
+                </tr>
+                <tr>
+                    <td>end</td>
+                    <td>String</td>
+                    <td>time String(HH:ii)</td>
+                </tr>
+                <tr>
+                    <td>text</td>
+                    <td>String</td>
+                    <td>Show Text</td>
+                </tr>
+                <tr>
+                    <td>data</td>
+                    <td>Object,Array</td>
+                    <td>callback data Object</td>
+                </tr>
+            </table>
+        </p>
+    </div>
+
+    <div id="footer">
+        <div class="container">
+            <p class="muted credit">Orignal Version : Copyright © 2014 <a href="https://github.com/ateliee"
+                    target="_blank">ateliee</a>
+                inc. All Rights Reserved.</p>
+            <p class="muted credit">Plus Version : Copyright © 2019 <a href="https://github.com/linmasahiro"
+                    target="_blank">Lin</a>
+                inc. All Rights Reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>
