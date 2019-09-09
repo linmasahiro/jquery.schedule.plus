@@ -192,7 +192,11 @@
         var selectedType = jQuery('input[name="timeType"]:checked').val();
         jQuery('input[name="timeType"]').change(function () {
             jQuery('#schedule').empty();
-            scheduleInit(widthTimeTypes[jQuery(this).val()]);
+            if (jQuery('input[name="mutiple"]:checked').val() == '0') {
+                scheduleInit(widthTimeTypes[jQuery(this).val()], false);
+            } else {
+                scheduleInit(widthTimeTypes[jQuery(this).val()], true);
+            }
         });
 
         jQuery('input[name="mutiple"]').change(function () {
