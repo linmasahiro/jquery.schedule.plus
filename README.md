@@ -1,6 +1,8 @@
 jq.Schedule.Plus
 ===============
 
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+
 ![](https://raw.githubusercontent.com/linmasahiro/jquery.schedule.plus/master/demo/images.png)
 
 jquery and html schedule calendar base on jq.Schedule!
